@@ -41,6 +41,8 @@ A lightweight browser extension that lets you draw, annotate, and add text on to
 
 Clicking the extension icon injects a full-screen canvas overlay and a floating toolbar into the current tab. Clicking the icon again prompts you to close the toolkit and removes all injected elements cleanly from the page.
 
+"Esc" first press resets to the pen from any other tool, press again to disable the tool. "Esc" again to enable it again. Green icon indicates when it's on.
+
 ---
 
 ## 📁 Project Structure
