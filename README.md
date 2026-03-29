@@ -24,8 +24,8 @@ A lightweight browser extension that lets you draw, annotate, and add text on to
 ## 📦 Installation (Manual)
 
 1. Download or clone this repository
-2. Open Chrome and go to `chrome://extensions`
-3. Enable **Developer Mode** (toggle in the top-right corner)
+2. Open Chrome and go to `chrome://extensions` 
+3. Enable **Developer Mode** (toggle in the top-right corner) / (I've also tested on Brave, similar process)
 4. Click **"Load unpacked"** and select the project folder
 5. Click the extension icon in your toolbar to activate it on any page
 
