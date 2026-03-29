@@ -66,4 +66,6 @@ MIT License — feel free to use, modify, and distribute.
 
 ## 👤 Author
 
+I created this tool for my own personal use, there are way more functions than I actually need, so don't expect me to keep implementing more, I think the UI is almost too bloated already. Feel free to copy and improve it however you like. 
+
 Made by [@Jhonatanjhs](https://github.com/Jhonatanjhs)
