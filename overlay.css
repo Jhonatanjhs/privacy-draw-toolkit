@@ -1,0 +1,158 @@
+#privacy-draw-canvas {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 100vw !important; height: 100vh !important;
+    z-index: 2147483640 !important;
+    pointer-events: auto;
+    cursor: crosshair;
+}
+
+#privacy-draw-canvas.interaction-mode { pointer-events: none !important; }
+#privacy-draw-canvas.whiteboard-active { background-color: white !important; }
+#privacy-draw-canvas.darkboard-active { background-color: #222 !important; }
+
+#privacy-grid-canvas {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 100vw !important; height: 100vh !important;
+    z-index: 2147483641 !important; 
+    pointer-events: none;
+}
+
+#privacy-draw-toolbar {
+    position: fixed;
+    top: 20px; 
+    right: 40px; 
+    z-index: 2147483647;
+    background: #222;
+    padding: 6px; 
+    border-radius: 4px;
+    display: inline-flex;
+    flex-direction: column; 
+    gap: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    color: white;
+    font-family: sans-serif;
+    width: 158px;
+    user-select: none;
+    border: 1px solid #444;
+}
+
+#privacy-draw-toolbar.is-minimized > *:not(#toolbox-top-bar) {
+    display: none !important;
+}
+
+#toolbox-top-bar {
+    display: flex; gap: 2px; align-items: stretch; 
+    background: #444; border-radius: 2px; height: 20px;
+}
+
+.status-indicator {
+    width: 10px; height: 10px; border-radius: 50%;
+    align-self: center; margin: 0 5px; background: #28a745;
+}
+.status-indicator.paused { background: #888; }
+
+.drag-handle {
+    flex: 1; cursor: move; display: flex;
+    justify-content: center; align-items: center;
+    color: #ccc; font-size: 10px; font-weight: bold;
+}
+
+#toolboxHideBtn {
+    background: #555; border: none; color: #fff;
+    cursor: pointer; font-size: 9px; padding: 0 6px;
+    font-weight: bold; border-left: 1px solid #666;
+}
+
+.draw-btn {
+    background: #333; color: white; border: 1px solid #555;
+    padding: 6px 1px;
+    border-radius: 3px; cursor: pointer;
+    font-size: 10px; font-weight: bold;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+    line-height: 1.2;
+}
+
+.draw-btn span {
+    color: #aaa; 
+    font-weight: normal;
+    margin-left: 1px;
+}
+
+.draw-btn.active { background: #007bff !important; border-color: #00a2ff !important; }
+
+/* New class for symbol buttons to match color picker size */
+.symbol-btn {
+    background: #333; 
+    border: 1px solid #555;
+    cursor: pointer; 
+    height: 22px; 
+    width: 22px; 
+    border-radius: 3px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 14px; 
+    padding: 0;
+}
+/* specific colors (green/red/yellow) in the HTML for better control */
+.symbol-btn:hover { background: #444; }
+.symbol-btn.active { background: #007bff; border-color: #00a2ff; }
+
+.tool-group {
+    background: #333; padding: 3px; border-radius: 3px;
+    display: flex; flex-direction: column; gap: 2px;
+}
+
+.slider-row {
+    display: flex; align-items: center; gap: 4px; 
+    padding: 0 2px; margin-top: 2px;
+}
+
+.slider-val {
+    font-size: 9px; color: #00a2ff; min-width: 28px; font-weight: bold;
+}
+
+input[type="range"].slim-slider {
+    -webkit-appearance: none;
+    width: 90px;
+    background: #555;
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
+}
+
+input[type="range"].slim-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px; height: 10px;
+    background: #007bff;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.color-picker-input {
+    -webkit-appearance: none; border: 1px solid #555;
+    background: none; cursor: pointer;
+    height: 22px; width: 22px; border-radius: 3px;
+}
+
+#brush-cursor {
+    position: fixed !important;
+    border: 1px solid rgba(0,0,0,0.3) !important;
+    border-radius: 50% !important;
+    pointer-events: none !important;
+    display: none;
+    z-index: 2147483647 !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+.editable-text {
+    position: fixed; min-width: 5px; padding: 2px;
+    z-index: 2147483646; outline: none; white-space: nowrap;
+    font-family: Arial, sans-serif;
+}
