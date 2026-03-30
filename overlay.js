@@ -9,12 +9,18 @@
 
     // SECOND: Define the cleanup (WITHOUT the removeEventListener line)
     window._privacyCleanup = function() {
-        ['privacy-draw-toolbar', 'privacy-draw-canvas', 'privacy-grid-canvas', 'brush-cursor', 'size-toast', 'privacy-draw-styles'].forEach(id => { 
-            const el = document.getElementById(id); if(el) el.remove(); 
-        });
-        document.querySelectorAll('.editable-text').forEach(t => t.remove());
-        delete window._privacyStrokes; delete window._privacyCleanup;
-    };
+    ['privacy-draw-toolbar', 'privacy-draw-canvas', 'privacy-grid-canvas', 'brush-cursor', 'size-toast', 'privacy-draw-styles'].forEach(id => {
+        const el = document.getElementById(id); if(el) el.remove();
+    });
+    document.querySelectorAll('.editable-text').forEach(t => t.remove());
+    window.onmousedown = null;
+    window.onmousemove = null;
+    window.onmouseup = null;
+    window.onkeydown = null;
+    window.onresize = null;
+    delete window._privacyStrokes;
+    delete window._privacyCleanup;
+};
 
     // THIRD: Check if we should toggle OFF
     const existingToolbar = document.getElementById('privacy-draw-toolbar');
@@ -59,13 +65,18 @@ if (existingToolbar) {
     `;
 
     window._privacyCleanup = function() {
-        
-        ['privacy-draw-toolbar', 'privacy-draw-canvas', 'privacy-grid-canvas', 'brush-cursor', 'size-toast', 'privacy-draw-styles'].forEach(id => { 
-            const el = document.getElementById(id); if(el) el.remove(); 
-        });
-        document.querySelectorAll('.editable-text').forEach(t => t.remove());
-        delete window._privacyStrokes; delete window._privacyCleanup;
-    };
+    ['privacy-draw-toolbar', 'privacy-draw-canvas', 'privacy-grid-canvas', 'brush-cursor', 'size-toast', 'privacy-draw-styles'].forEach(id => {
+        const el = document.getElementById(id); if(el) el.remove();
+    });
+    document.querySelectorAll('.editable-text').forEach(t => t.remove());
+    window.onmousedown = null;
+    window.onmousemove = null;
+    window.onmouseup = null;
+    window.onkeydown = null;
+    window.onresize = null;
+    delete window._privacyStrokes;
+    delete window._privacyCleanup;
+};
 
     window.addEventListener('beforeunload', leavePageWarning);
 
@@ -322,8 +333,7 @@ document.getElementById('saveExitBtn').onclick = () => {
         e.preventDefault();
         
         // Mark that we are actively scrolling to keep the cursor visible
-        window._isScrolling = true; 
-        isInteracting = true; 
+        window._isScrolling = true;  
 
         const delta = e.deltaY > 0 ? -2 : 2;
         let currentVal = 0;
@@ -405,6 +415,7 @@ document.getElementById('saveExitBtn').onclick = () => {
     };
 
     window.onmousedown = (e) => {
+		if (!window._privacyStrokes) return;
 		// 1. Always ignore clicks on the toolbar first
 		if (e.target.closest('#privacy-draw-toolbar')) return;
 
@@ -445,6 +456,7 @@ document.getElementById('saveExitBtn').onclick = () => {
 };
 
     window.onmousemove=(e)=>{ 
+		if (!window._privacyStrokes) return;
         if(isDraggingToolbox){ 
 			toolbar.style.left = 'auto'; 
 
