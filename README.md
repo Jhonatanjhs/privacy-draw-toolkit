@@ -70,11 +70,6 @@ Clicking the extension icon injects a full-screen canvas overlay and a floating 
 
 ---
 
-## 📁 Project Structure
-
-
----
-
 ## 📋 Changelog
 
 ### v2.0 — 2026-03-30
