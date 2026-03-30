@@ -33,18 +33,18 @@ A lightweight browser extension that lets you draw, annotate, and add text on to
 
 ## 🚀 For the future (maybe)
 
-> small "X" exit button
-> undo/redo for text as well
-> copy only notes
-> copy flattened image
-> save flattened image
-> maintain notes fixed on the page as you scroll
-> UI revamp to make it less bloated
-> lines, circles
+*small "X" exit button
+*undo/redo for text as well
+*copy only notes
+*copy flattened image
+*save flattened image
+*maintain notes fixed on the page as you scroll
+*UI revamp to make it less bloated
+*lines, circles
 
 maybe:
-> make the toolbox remember its last position so it opens in the same spot next time
-> small opacity slider for the Whiteboard/Darkboard backgrounds
+*make the toolbox remember its last position so it opens in the same spot next time
+*small opacity slider for the Whiteboard/Darkboard backgrounds
 
 ---
 
