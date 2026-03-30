@@ -318,6 +318,7 @@ document.getElementById('saveExitBtn').onclick = () => {
 
     window.addEventListener('wheel', (e) => {
         if (e.target.closest('#privacy-draw-toolbar')) return; 
+		if (isInteracting || canvas.classList.contains('interaction-mode')) return;
         e.preventDefault();
         
         // Mark that we are actively scrolling to keep the cursor visible
