@@ -1,8 +1,6 @@
 # 🖊️ Privacy Draw Toolkit
 
-A lightweight browser extension that lets you draw, annotate, and add text on top of any website — great for presentations, tutorials, privacy-conscious screenshots, and quick visual notes. 
-
-What's different from other ones? Being able to draw directly on the website means you don't need to share your whole screen on any sharing app like Zoom, Teams, Discord, etc. just your browser.
+A lightweight browser extension that lets you draw, annotate, and add text on top of any webpage — great for presentations, tutorials, privacy-conscious screenshots, and quick visual notes.
 
 ![Privacy Draw Toolkit in action](screenshot.png)
 
@@ -26,24 +24,33 @@ What's different from other ones? Being able to draw directly on the website mea
 ## 📦 Installation (Manual)
 
 1. Download or clone this repository
-2. Open Chrome and go to `chrome://extensions` 
-3. Enable **Developer Mode** (toggle in the top-right corner) / (I've also tested on Brave, similar process)
+2. Open Chrome and go to `chrome://extensions`
+3. Enable **Developer Mode** (toggle in the top-right corner)
 4. Click **"Load unpacked"** and select the project folder
 5. Click the extension icon in your toolbar to activate it on any page
 
 ---
 
-## 🚀 Chrome Web Store
+## 🚀 For the future (maybe)
 
-> Coming soon!
+> small "X" exit button
+> undo/redo for text as well
+> copy only notes
+> copy flattened image
+> save flattened image
+> maintain notes fixed on the page as you scroll
+> UI revamp to make it less bloated
+> lines, circles
+
+maybe:
+> make the toolbox remember its last position so it opens in the same spot next time
+> small opacity slider for the Whiteboard/Darkboard backgrounds
 
 ---
 
 ## 🛠️ How It Works
 
 Clicking the extension icon injects a full-screen canvas overlay and a floating toolbar into the current tab. Clicking the icon again prompts you to close the toolkit and removes all injected elements cleanly from the page.
-
-"Esc" first press resets to the pen from any other tool, press again to disable the tool. "Esc" again to enable it again. Green icon indicates when it's on.
 
 ---
 
@@ -69,7 +76,5 @@ MIT License — feel free to use, modify, and distribute.
 ---
 
 ## 👤 Author
-
-I created this tool for my own personal use, there are way more functions than I actually need, so don't expect me to keep implementing more, I think the UI is almost too bloated already. Feel free to copy and improve it however you like. 
 
 Made by [@Jhonatanjhs](https://github.com/Jhonatanjhs)
