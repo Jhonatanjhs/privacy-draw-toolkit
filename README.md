@@ -31,7 +31,7 @@ A lightweight browser extension that lets you draw, annotate, and add text on to
 
 ---
 
-## 🚀 For the future (maybe)
+## 🚀 For the future
 
 * small "X" exit button
 * undo/redo for text as well 
