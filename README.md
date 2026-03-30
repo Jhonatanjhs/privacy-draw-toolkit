@@ -1,6 +1,8 @@
 # 🖊️ Privacy Draw Toolkit
 
-A lightweight browser extension that lets you draw, annotate, and add text on top of any website — great for presentations, tutorials, privacy-conscious screenshots, and quick visual notes. What's different from other ones? Being able to draw directly on the website means you don't need to share your whole screen on any sharing app like Zoom, Teams, Discord, etc. just your browser.
+A lightweight browser extension that lets you draw, annotate, and add text on top of any website — great for presentations, tutorials, privacy-conscious screenshots, and quick visual notes. 
+
+What's different from other ones? Being able to draw directly on the website means you don't need to share your whole screen on any sharing app like Zoom, Teams, Discord, etc. just your browser.
 
 ![Privacy Draw Toolkit in action](screenshot.png)
 
