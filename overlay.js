@@ -1,5 +1,4 @@
 (function() {
-    // FIRST: Define the warning function
     const leavePageWarning = (e) => {
         if ((window._privacyStrokes && window._privacyStrokes.length > 0) || document.querySelectorAll('.editable-text').length > 0) {
             e.preventDefault(); 
@@ -7,55 +6,48 @@
         }
     };
 
-    // SECOND: Define the cleanup (WITHOUT the removeEventListener line)
     window._privacyCleanup = function() {
-    ['privacy-draw-toolbar', 'privacy-draw-canvas', 'privacy-grid-canvas', 'brush-cursor', 'size-toast', 'privacy-draw-styles'].forEach(id => {
-        const el = document.getElementById(id); if(el) el.remove();
-    });
-    document.querySelectorAll('.editable-text').forEach(t => t.remove());
-    window.onmousedown = null;
-    window.onmousemove = null;
-    window.onmouseup = null;
-    window.onkeydown = null;
-    window.onresize = null;
-    delete window._privacyStrokes;
-    delete window._privacyCleanup;
-};
-
-    // THIRD: Check if we should toggle OFF
-    const existingToolbar = document.getElementById('privacy-draw-toolbar');
-if (existingToolbar) { 
-    // Add the check here!
-    if (confirm("Close the toolkit? Unsaved drawings will be lost.")) {
+        ['privacy-draw-toolbar', 'privacy-draw-canvas', 'privacy-grid-canvas', 'brush-cursor', 'size-toast', 'privacy-draw-styles'].forEach(id => {
+            const el = document.getElementById(id); if(el) el.remove();
+        });
+        document.querySelectorAll('.editable-text').forEach(t => t.remove());
+        window.removeEventListener('wheel', handleWheel);
         window.removeEventListener('beforeunload', leavePageWarning);
-        window._privacyCleanup(); 
+        window.onmousedown = null;
+        window.onmousemove = null;
+        window.onmouseup = null;
+        window.onkeydown = null;
+        window.onresize = null;
+        delete window._privacyStrokes;
+        delete window._privacyCleanup;
+    };
+
+    const existingToolbar = document.getElementById('privacy-draw-toolbar');
+    if (existingToolbar) { 
+        if (confirm("Close the toolkit? Unsaved drawings will be lost.")) {
+            window._privacyCleanup(); 
+        }
+        return;
     }
-    return; // Stay on the page regardless of the choice
-}
 
     const style = document.createElement('style');
     style.id = 'privacy-draw-styles';
     style.innerHTML = `
-        /* 1. Hide the mini picker by default */
         #miniColorPicker { 
-		display: none; 
-		width: 16px !important; 
-		height: 16px !important; 
-		padding: 0 !important;
-		margin: 0;
-		cursor: pointer;
-		background: none;
-		appearance: none;
-		-webkit-appearance: none;
-		box-sizing: border-box;
-		}
-		
-        /* 2. Show the mini picker ONLY when the toolbar is minimized */
-		#privacy-draw-toolbar.is-minimized #miniColorPicker { 
-			display: block; 
-		}
-
-        /* Ensure the top bar spaces items out correctly */
+            display: none; 
+            width: 16px !important; 
+            height: 16px !important; 
+            padding: 0 !important;
+            margin: 0;
+            cursor: pointer;
+            background: none;
+            appearance: none;
+            -webkit-appearance: none;
+            box-sizing: border-box;
+        }
+        #privacy-draw-toolbar.is-minimized #miniColorPicker { 
+            display: block; 
+        }
         #toolbox-top-bar { 
             display: flex; 
             align-items: center; 
@@ -65,18 +57,20 @@ if (existingToolbar) {
     `;
 
     window._privacyCleanup = function() {
-    ['privacy-draw-toolbar', 'privacy-draw-canvas', 'privacy-grid-canvas', 'brush-cursor', 'size-toast', 'privacy-draw-styles'].forEach(id => {
-        const el = document.getElementById(id); if(el) el.remove();
-    });
-    document.querySelectorAll('.editable-text').forEach(t => t.remove());
-    window.onmousedown = null;
-    window.onmousemove = null;
-    window.onmouseup = null;
-    window.onkeydown = null;
-    window.onresize = null;
-    delete window._privacyStrokes;
-    delete window._privacyCleanup;
-};
+        ['privacy-draw-toolbar', 'privacy-draw-canvas', 'privacy-grid-canvas', 'brush-cursor', 'size-toast', 'privacy-draw-styles'].forEach(id => {
+            const el = document.getElementById(id); if(el) el.remove();
+        });
+        document.querySelectorAll('.editable-text').forEach(t => t.remove());
+        window.removeEventListener('wheel', handleWheel);
+        window.removeEventListener('beforeunload', leavePageWarning);
+        window.onmousedown = null;
+        window.onmousemove = null;
+        window.onmouseup = null;
+        window.onkeydown = null;
+        window.onresize = null;
+        delete window._privacyStrokes;
+        delete window._privacyCleanup;
+    };
 
     window.addEventListener('beforeunload', leavePageWarning);
 
@@ -86,33 +80,28 @@ if (existingToolbar) {
     let toolboxOffset = { x: 0, y: 0 }, mouseOffset = { x: 0, y: 0 }, isDraggingToolbox = false;
     let brushColor = "#4a4a4a", highlighterColor = "#ffff00", textColor = "#4a4a4a";
     let penSize = 4, highlighterSize = 25, eraserSize = 30, textSize = 24, gridMode = 'none';
-	let useSmoothDrawing = true; // Set to false to go back to the "Old Format" instantly
-	
-	// This function updates the variable and both physical picker boxes at once
-const syncColor = (val) => {
-    brushColor = val;
-    const mainPicker = document.getElementById('colorPicker');
-    const miniPicker = document.getElementById('miniColorPicker');
-    
-    if (mainPicker) mainPicker.value = val;
-    if (miniPicker) miniPicker.value = val;
-};
-	
-window.handleClear = function() {
-    if (confirm("Are you sure you want to clear the entire canvas?")) {
-        window._privacyStrokes = [];
-        document.querySelectorAll('.editable-text').forEach(t => t.remove());
+    let useSmoothDrawing = true;
 
-        const mainCanvas = document.getElementById('privacy-draw-canvas');
-        if (mainCanvas) {
-            const ctxClear = mainCanvas.getContext('2d');
-            ctxClear.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+    const syncColor = (val) => {
+        brushColor = val;
+        const mainPicker = document.getElementById('colorPicker');
+        const miniPicker = document.getElementById('miniColorPicker');
+        if (mainPicker) mainPicker.value = val;
+        if (miniPicker) miniPicker.value = val;
+    };
+
+    window.handleClear = function() {
+        if (confirm("Are you sure you want to clear the entire canvas?")) {
+            window._privacyStrokes = [];
+            document.querySelectorAll('.editable-text').forEach(t => t.remove());
+            const mainCanvas = document.getElementById('privacy-draw-canvas');
+            if (mainCanvas) {
+                const ctxClear = mainCanvas.getContext('2d');
+                ctxClear.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+            }
+            if (typeof render === "function") render();
         }
-        if (typeof render === "function") {
-            render();
-        }
-    }
-};
+    };
 
     const canvas = document.createElement('canvas');
     const gCanvas = document.createElement('canvas');
@@ -131,19 +120,16 @@ window.handleClear = function() {
     toolbar.id = "privacy-draw-toolbar";
     toolbar.innerHTML = `
         <div id="toolbox-top-bar">
-			<div id="drawStatus" class="status-indicator"></div>
-			<div class="drag-handle" id="toolboxDragHandle">⋮⋮⋮</div>
-			
-			<input type="color" id="miniColorPicker" class="color-picker-input" value="#4a4a4a">
-			
-			<button id="toolboxHideBtn">Hide<span>(Q)</span></button>
-</div>
+            <div id="drawStatus" class="status-indicator"></div>
+            <div class="drag-handle" id="toolboxDragHandle">⋮⋮⋮</div>
+            <input type="color" id="miniColorPicker" class="color-picker-input" value="#4a4a4a">
+            <button id="toolboxHideBtn">Hide<span>(Q)</span></button>
+        </div>
         <div style="display:flex; gap:2px;">
             <button class="draw-btn" id="whiteboardToggle" style="flex:1;" title="Toggle Whiteboard Background (W)">⬜ White<span>(W)</span></button>
             <button class="draw-btn" id="darkboardToggle" style="flex:1;" title="Toggle Darkboard Background (D)">⬛ Dark<span>(D)</span></button>
         </div>
         <button class="draw-btn" id="gridToggle" title="Cycle through Grid overlays (G)">🏁 Grid: None<span>(G)</span></button>
-        
         <div style="display:flex; gap:4px; padding: 2px 3px; background: #333; border-radius: 3px; justify-content: space-between;">
             <button class="symbol-btn" id="arrowTool" title="Draw Arrow (1) - Click & Drag" style="color:#00ff00;">➔</button>
             <button class="symbol-btn" data-sym="✓" id="sym-1" title="Checkmark (2) - Double click to delete" style="color:#00ff00;">✓</button>
@@ -151,7 +137,6 @@ window.handleClear = function() {
             <button class="symbol-btn" data-sym="⚠️" id="sym-3" title="Warning (4) - Double click to delete" style="color:#ffcc00;">⚠️</button>
             <button class="symbol-btn" data-sym="❓" id="sym-4" title="Question (5) - Double click to delete" style="color:#00a2ff;">❓</button>
         </div>
-
         <div class="tool-group">
             <div style="display:flex; align-items:center; gap:4px;">
                 <button class="draw-btn active" id="penMode" style="flex:1;" title="Pen Tool (P)">✏️ Pen<span>(P)</span></button>
@@ -176,7 +161,6 @@ window.handleClear = function() {
             <button class="draw-btn" id="undoBtn" style="flex:1;" title="Undo (Ctrl+Z)">↩️ Undo</button>
             <button class="draw-btn" id="redoBtn" style="flex:1;" title="Redo (Ctrl+Y)">Redo ↪️</button>
         </div>
-        
         <div style="display:flex; flex-direction:column; gap:3px; margin-top:5px;">
             <button class="draw-btn action-btn" id="copyBtn" title="Copy PNG drawings to clipboard (Ctrl+C)">📋 Copy to Clipboard</button>
             <div style="display:flex; gap:3px;">
@@ -212,62 +196,56 @@ window.handleClear = function() {
     };
 
     const render = () => { 
-    ctx.clearRect(0,0,canvas.width,canvas.height); gCtx.clearRect(0,0,gCanvas.width,gCanvas.height); 
-    
-    if (gridMode !== 'none') {
-        const isDark = canvas.classList.contains('darkboard-active');
-        const baseColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)";
-        gCtx.strokeStyle = baseColor; gCtx.fillStyle = (gridMode === 'dots' && !isDark) ? "rgba(0,0,0,0.4)" : baseColor;
-        gCtx.beginPath();
-        for(let x=0; x<gCanvas.width; x+=40) {
-            for(let y=0; y<gCanvas.height; y+=40) {
-                if(gridMode==='dots') gCtx.fillRect(x,y,2,2);
-                else if(gridMode==='lines' && x===0) { gCtx.moveTo(0,y); gCtx.lineTo(gCanvas.width,y); }
-                else if(gridMode==='squares') { gCtx.rect(x,y,40,40); }
-            }
-        }
-        gCtx.stroke();
-    }
-
-    window._privacyStrokes.forEach(s => { 
-        ctx.globalCompositeOperation = s.tool==='eraser'?'destination-out':(s.tool==='highlighter'?'multiply':'source-over');
-        ctx.lineWidth = s.tool==='eraser'?(s.width*2):s.width; 
-        ctx.lineCap = 'round'; 
-        ctx.lineJoin = 'round'; // Keeps joints smooth
-        ctx.strokeStyle = s.color;
-        ctx.beginPath();
-
-        if(s.tool === 'arrow') {
-            const headlen = s.width * 4; const from = s.points[0], to = s.points[s.points.length-1];
-            const angle = Math.atan2(to.y - from.y, to.x - from.x);
-            ctx.moveTo(from.x, from.y); ctx.lineTo(to.x, to.y);
-            ctx.lineTo(to.x - headlen * Math.cos(angle - Math.PI / 6), to.y - headlen * Math.sin(angle - Math.PI / 6));
-            ctx.moveTo(to.x, to.y);
-            ctx.lineTo(to.x - headlen * Math.cos(angle + Math.PI / 6), to.y - headlen * Math.sin(angle + Math.PI / 6));
-        } else {
-            // Check the toggle variable we added earlier
-            if (useSmoothDrawing && s.points.length >= 3) {
-                ctx.moveTo(s.points[0].x, s.points[0].y);
-                for (let i = 1; i < s.points.length - 2; i++) {
-                    const xc = (s.points[i].x + s.points[i + 1].x) / 2;
-                    const yc = (s.points[i].y + s.points[i + 1].y) / 2;
-                    ctx.quadraticCurveTo(s.points[i].x, s.points[i].y, xc, yc);
+        ctx.clearRect(0,0,canvas.width,canvas.height); gCtx.clearRect(0,0,gCanvas.width,gCanvas.height); 
+        if (gridMode !== 'none') {
+            const isDark = canvas.classList.contains('darkboard-active');
+            const baseColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)";
+            gCtx.strokeStyle = baseColor; gCtx.fillStyle = (gridMode === 'dots' && !isDark) ? "rgba(0,0,0,0.4)" : baseColor;
+            gCtx.beginPath();
+            for(let x=0; x<gCanvas.width; x+=40) {
+                for(let y=0; y<gCanvas.height; y+=40) {
+                    if(gridMode==='dots') gCtx.fillRect(x,y,2,2);
+                    else if(gridMode==='lines' && x===0) { gCtx.moveTo(0,y); gCtx.lineTo(gCanvas.width,y); }
+                    else if(gridMode==='squares') { gCtx.rect(x,y,40,40); }
                 }
-                // Connect to the very last point
-                ctx.quadraticCurveTo(
-                    s.points[s.points.length - 2].x, 
-                    s.points[s.points.length - 2].y, 
-                    s.points[s.points.length - 1].x, 
-                    s.points[s.points.length - 1].y
-                );
-            } else {
-                // FALLBACK: Use original straight lines if smoothing is off or points are too few
-                s.points.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
             }
+            gCtx.stroke();
         }
-        ctx.stroke();
-    });
-};
+        window._privacyStrokes.forEach(s => { 
+            ctx.globalCompositeOperation = s.tool==='eraser'?'destination-out':(s.tool==='highlighter'?'multiply':'source-over');
+            ctx.lineWidth = s.tool==='eraser'?(s.width*2):s.width; 
+            ctx.lineCap = 'round'; 
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = s.color;
+            ctx.beginPath();
+            if(s.tool === 'arrow') {
+                const headlen = s.width * 4; const from = s.points[0], to = s.points[s.points.length-1];
+                const angle = Math.atan2(to.y - from.y, to.x - from.x);
+                ctx.moveTo(from.x, from.y); ctx.lineTo(to.x, to.y);
+                ctx.lineTo(to.x - headlen * Math.cos(angle - Math.PI / 6), to.y - headlen * Math.sin(angle - Math.PI / 6));
+                ctx.moveTo(to.x, to.y);
+                ctx.lineTo(to.x - headlen * Math.cos(angle + Math.PI / 6), to.y - headlen * Math.sin(angle + Math.PI / 6));
+            } else {
+                if (useSmoothDrawing && s.points.length >= 3) {
+                    ctx.moveTo(s.points[0].x, s.points[0].y);
+                    for (let i = 1; i < s.points.length - 2; i++) {
+                        const xc = (s.points[i].x + s.points[i + 1].x) / 2;
+                        const yc = (s.points[i].y + s.points[i + 1].y) / 2;
+                        ctx.quadraticCurveTo(s.points[i].x, s.points[i].y, xc, yc);
+                    }
+                    ctx.quadraticCurveTo(
+                        s.points[s.points.length - 2].x, 
+                        s.points[s.points.length - 2].y, 
+                        s.points[s.points.length - 1].x, 
+                        s.points[s.points.length - 1].y
+                    );
+                } else {
+                    s.points.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
+                }
+            }
+            ctx.stroke();
+        });
+    };
 
     const getFinalCanvas = () => {
         const final = document.createElement('canvas');
@@ -289,51 +267,43 @@ window.handleClear = function() {
     };
 
     document.getElementById('copyBtn').onclick = () => {
-		const btn = document.getElementById('copyBtn');
-		
-		// 1. Get the final flattened canvas (PNG data)
-		const finalCanvas = getFinalCanvas();
+        const btn = document.getElementById('copyBtn');
+        const finalCanvas = getFinalCanvas();
+        finalCanvas.toBlob(blob => {
+            const item = new ClipboardItem({ "image/png": blob });
+            navigator.clipboard.write([item]).then(() => {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = "📋 Image Copied!";
+                setTimeout(() => btn.innerHTML = originalText, 1500);
+            }).catch(err => {
+                console.error("Copy failed: ", err);
+                btn.innerHTML = "❌ Copy Failed";
+            });
+        }, "image/png");
+    };
 
-		// 2. Convert that canvas to a PNG Blob
-		finalCanvas.toBlob(blob => {
-			const item = new ClipboardItem({ "image/png": blob });
-			
-			// 3. Write it to the system clipboard
-			navigator.clipboard.write([item]).then(() => {
-				const originalText = btn.innerHTML;
-				btn.innerHTML = "📋 Image Copied!";
-				setTimeout(() => btn.innerHTML = originalText, 1500);
-			}).catch(err => {
-				console.error("Copy failed: ", err);
-				btn.innerHTML = "❌ Copy Failed";
-			});
-		}, "image/png");
-	};
     document.getElementById('saveBtn').onclick = handleSave;
-    // Change Clear & Exit to ask for permission first
-document.getElementById('clearExitBtn').onclick = () => { 
-    if (confirm("This will delete all drawings and close the toolkit. Proceed?")) {
-        handleClear(); 
-        window.removeEventListener('beforeunload', leavePageWarning); 
-        window._privacyCleanup(); 
-    }
-};
-    // Change Save & Exit to ask for permission first
-document.getElementById('saveExitBtn').onclick = () => { 
-    if (confirm("Save drawing and close the toolkit?")) {
-        handleSave(); 
-        window.removeEventListener('beforeunload', leavePageWarning); 
-        window._privacyCleanup(); 
-    }
-};
 
-    window.addEventListener('wheel', (e) => {
-        if (e.target.closest('#privacy-draw-toolbar')) return; 
-		if (isInteracting || canvas.classList.contains('interaction-mode')) return;
+    document.getElementById('clearExitBtn').onclick = () => { 
+        if (confirm("This will delete all drawings and close the toolkit. Proceed?")) {
+            handleClear(); 
+            window._privacyCleanup(); 
+        }
+    };
+
+    document.getElementById('saveExitBtn').onclick = () => { 
+        if (confirm("Save drawing and close the toolkit?")) {
+            handleSave(); 
+            window._privacyCleanup(); 
+        }
+    };
+
+    const handleWheel = (e) => {
+        if (e.target.closest('#privacy-draw-toolbar')) return;
+        if (isInteracting || canvas.classList.contains('interaction-mode')) return;
         e.preventDefault();
-        
-        // Mark that we are actively scrolling to keep the cursor visible
-        window._isScrolling = true;  
+
+        window._isScrolling = true;
 
         const delta = e.deltaY > 0 ? -2 : 2;
         let currentVal = 0;
@@ -350,9 +320,7 @@ document.getElementById('saveExitBtn').onclick = () => {
             currentVal = textSize = Math.max(10, Math.min(100, textSize + delta));
         }
 
-        showToast(`Size: ${Math.round(currentVal)}`); 
-        
-        // Keep the cursor locked to the mouse during scroll
+        showToast(`Size: ${Math.round(currentVal)}`);
         brushCursor.style.left = e.clientX + 'px';
         brushCursor.style.top = e.clientY + 'px';
         updateBrushUI();
@@ -360,35 +328,28 @@ document.getElementById('saveExitBtn').onclick = () => {
         clearTimeout(window._scrollEndTimer);
         window._scrollEndTimer = setTimeout(() => {
             window._isScrolling = false;
-            // Only stop interacting if we aren't in "Esc" (Browsing) mode
             if (!canvas.classList.contains('interaction-mode')) {
                 isInteracting = false; 
             }
             updateBrushUI();
-        }, 150); 
-    }, { passive: false });
+        }, 150);
+    };
+    window.addEventListener('wheel', handleWheel, { passive: false });
 
     const updateBrushUI = () => { 
-		// 1. PRIORITY KILL SWITCH: If in Browsing Mode (Esc) and NOT actively scrolling, HIDE.
-		// window._isScrolling is a flag we will set in the wheel listener below.
-		if (isInteracting && !window._isScrolling && currentTool !== 'text') {
-			brushCursor.style.display = 'none';
-			return;
-		}
-
-		// 2. HIDE IF: Using Move Tool
-		if (currentTool === 'move') {
-			brushCursor.style.display = 'none';
-			return;
-		}
-
-		// 3. SHOW & RESET STYLES
-		brushCursor.style.display = 'block'; 
-		brushCursor.style.border = "none"; 
-		brushCursor.style.background = "none";
-		brushCursor.innerText = ""; 
-		brushCursor.style.opacity = "1.0";
-		
+        if (isInteracting && !window._isScrolling && currentTool !== 'text') {
+            brushCursor.style.display = 'none';
+            return;
+        }
+        if (currentTool === 'move') {
+            brushCursor.style.display = 'none';
+            return;
+        }
+        brushCursor.style.display = 'block'; 
+        brushCursor.style.border = "none"; 
+        brushCursor.style.background = "none";
+        brushCursor.innerText = ""; 
+        brushCursor.style.opacity = "1.0";
         if (currentTool === 'text') {
             brushCursor.innerText = "Aa"; brushCursor.style.fontSize = textSize + 'px';
             brushCursor.style.color = textColor; brushCursor.style.opacity = "0.5";
@@ -415,65 +376,47 @@ document.getElementById('saveExitBtn').onclick = () => {
     };
 
     window.onmousedown = (e) => {
-		if (!window._privacyStrokes) return;
-		// 1. Always ignore clicks on the toolbar first
-		if (e.target.closest('#privacy-draw-toolbar')) return;
+        if (!window._privacyStrokes) return;
+        if (e.target.closest('#privacy-draw-toolbar')) return;
+        if (currentTool === 'text') {
+            createStorableText(e.clientX, e.clientY, "", textColor, textSize).focus();
+            isInteracting = false;
+            return;
+        }
+        if (isInteracting) return;
+        if (pendingSymbol) {
+            let colors = { "✕": "#ff4d4d", "⚠️": "#ffcc00", "❓": "#00a2ff" };
+            createStorableText(e.clientX, e.clientY, pendingSymbol, colors[pendingSymbol] || "#00ff00", symbolSize);
+            pendingSymbol = null; setTool('move'); return;
+        }
+        if (currentTool === 'move' && e.target.classList.contains('editable-text')) {
+            activeText = e.target; 
+            mouseOffset.x = e.clientX - activeText.offsetLeft; 
+            mouseOffset.y = e.clientY - activeText.offsetTop; 
+            return;
+        }
+        isDown = true; redoStack = [];
+        let c = (currentTool === 'arrow') ? "#00ff00" : (currentTool === 'highlighter' ? hexToRgba(highlighterColor, 0.5) : brushColor);
+        window._privacyStrokes.push({
+            tool: currentTool, 
+            color: c, 
+            width: currentTool === 'eraser' ? eraserSize : (currentTool === 'highlighter' ? highlighterSize : penSize), 
+            points: [{ x: e.clientX, y: e.clientY }]
+        });
+    };
 
-		// 2. TEXT TOOL: Check this BEFORE 'isInteracting' to bypass the double-click
-		if (currentTool === 'text') {
-			createStorableText(e.clientX, e.clientY, "", textColor, textSize).focus();
-			isInteracting = false; // Reset the interaction state immediately
-			return;
-		}
-
-		// 3. Now check interaction for other tools (like Symbols or Pen)
-		if (isInteracting) return;
-
-		// 4. SYMBOLS
-		if (pendingSymbol) {
-			let colors = { "✕": "#ff4d4d", "⚠️": "#ffcc00", "❓": "#00a2ff" };
-			createStorableText(e.clientX, e.clientY, pendingSymbol, colors[pendingSymbol] || "#00ff00", symbolSize);
-			pendingSymbol = null; setTool('move'); return;
-		}
-
-		// 5. MOVE TOOL
-		if (currentTool === 'move' && e.target.classList.contains('editable-text')) {
-			activeText = e.target; 
-			mouseOffset.x = e.clientX - activeText.offsetLeft; 
-			mouseOffset.y = e.clientY - activeText.offsetTop; 
-			return;
-		}
-
-		// 6. DRAWING TOOLS (Pen, Highlighter, Eraser, Arrow)
-		isDown = true; redoStack = [];
-		let c = (currentTool === 'arrow') ? "#00ff00" : (currentTool === 'highlighter' ? hexToRgba(highlighterColor, 0.5) : brushColor);
-		window._privacyStrokes.push({
-			tool: currentTool, 
-			color: c, 
-			width: currentTool === 'eraser' ? eraserSize : (currentTool === 'highlighter' ? highlighterSize : penSize), 
-			points: [{ x: e.clientX, y: e.clientY }]
-		});
-};
-
-    window.onmousemove=(e)=>{ 
-		if (!window._privacyStrokes) return;
+    window.onmousemove = (e) => { 
+        if (!window._privacyStrokes) return;
         if(isDraggingToolbox){ 
-			toolbar.style.left = 'auto'; 
-
-			// Calculate raw positions
-			let newTop = e.clientY - toolboxOffset.y;
-			let newRight = window.innerWidth - e.clientX - (toolbar.offsetWidth - toolboxOffset.x);
-
-			// Clamp Top/Bottom (Keep it within the vertical window)
-			let maxTop = window.innerHeight - toolbar.offsetHeight;
-			toolbar.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px'; 
-
-			// Clamp Left/Right (Keep it within the horizontal window)
-			let maxRight = window.innerWidth - toolbar.offsetWidth;
-			toolbar.style.right = Math.max(0, Math.min(newRight, maxRight)) + 'px'; 
-
-			return; 
-		} 
+            toolbar.style.left = 'auto';
+            let newTop = e.clientY - toolboxOffset.y;
+            let newRight = window.innerWidth - e.clientX - (toolbar.offsetWidth - toolboxOffset.x);
+            let maxTop = window.innerHeight - toolbar.offsetHeight;
+            toolbar.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px'; 
+            let maxRight = window.innerWidth - toolbar.offsetWidth;
+            toolbar.style.right = Math.max(0, Math.min(newRight, maxRight)) + 'px'; 
+            return; 
+        } 
         brushCursor.style.left=e.clientX+'px'; brushCursor.style.top=e.clientY+'px'; 
         sizeToast.style.left = (e.clientX + 20) + 'px'; sizeToast.style.top = (e.clientY + 20) + 'px';
         if(activeText && currentTool === 'move') { activeText.style.left = (e.clientX - mouseOffset.x) + 'px'; activeText.style.top = (e.clientY - mouseOffset.y) + 'px'; return; }
@@ -484,95 +427,75 @@ document.getElementById('saveExitBtn').onclick = () => {
         } 
     };
 
-    window.onmouseup=()=>{ isDown=false; isDraggingToolbox=false; activeText = null; };
+    window.onmouseup = () => { isDown=false; isDraggingToolbox=false; activeText = null; };
 
     window.onkeydown = (e) => {
-		const k = e.key.toLowerCase();
+        const k = e.key.toLowerCase();
+        if (k === 'escape') {
+            e.preventDefault();
+            if (isInteracting) {
+                isInteracting = false;
+                setTool('pen');
+            } else if (currentTool !== 'pen') {
+                setTool('pen');
+            } else {
+                isInteracting = true;
+            }
+            canvas.classList.toggle('interaction-mode', isInteracting);
+            document.getElementById('drawStatus').classList.toggle('paused', isInteracting);
+            updateBrushUI();
+            return;
+        }
+        if (e.target.tagName === 'INPUT' || e.target.contentEditable === 'true') return;
+        if (k === 'q') document.getElementById('toolboxHideBtn').click();
+        if (e.ctrlKey && k === 'c') { e.preventDefault(); document.getElementById('copyBtn').click(); }
+        if (e.ctrlKey && k === 's') { e.preventDefault(); document.getElementById('saveBtn').click(); }
+        if (['1', '2', '3', '4', '5'].includes(k)) { 
+            e.preventDefault(); 
+            document.querySelectorAll('.symbol-btn, #arrowTool')[parseInt(k) - 1].click(); 
+        }
+        if (k === 'w') document.getElementById('whiteboardToggle').click(); 
+        if (k === 'd') document.getElementById('darkboardToggle').click(); 
+        if (k === 'g') document.getElementById('gridToggle').click();
+        if (e.ctrlKey && k === 'x') { e.preventDefault(); document.getElementById('clearBtn').click(); }
+        if (e.ctrlKey && k === 'z') { e.preventDefault(); document.getElementById('undoBtn').click(); }
+        if (e.ctrlKey && k === 'y') { e.preventDefault(); document.getElementById('redoBtn').click(); }
+        const m = { p: 'pen', h: 'highlighter', e: 'eraser', t: 'text', m: 'move' }; 
+        if (m[k]) setTool(m[k]); 
+    };
 
-		// 1. The New Intelligent Escape Logic
-		if (k === 'escape') {
-			e.preventDefault();
+    document.getElementById('toolboxDragHandle').onmousedown = (e) => { 
+        isDraggingToolbox=true; let rect=toolbar.getBoundingClientRect(); 
+        toolboxOffset.x=e.clientX-rect.left; toolboxOffset.y=e.clientY-rect.top; 
+        e.preventDefault(); 
+    };
 
-			if (isInteracting) {
-				// If in Browsing mode (Gray dot), come back to Draw mode and use Pen
-				isInteracting = false;
-				setTool('pen');
-			} else if (currentTool !== 'pen') {
-				// If in Draw mode but using something else (Text/Eraser), reset to Pen
-				setTool('pen');
-			} else {
-				// If already in Draw mode AND using Pen, switch to Browsing mode
-				isInteracting = true;
-			}
-
-			// Apply visual updates
-			canvas.classList.toggle('interaction-mode', isInteracting);
-			document.getElementById('drawStatus').classList.toggle('paused', isInteracting);
-			updateBrushUI();
-			return; // Stop here so it doesn't trigger other keys
-		}
-
-		// 2. Safety: Don't trigger shortcuts if you are typing in a text box
-		if (e.target.tagName === 'INPUT' || e.target.contentEditable === 'true') return;
-
-		// 3. All your existing shortcuts remain untouched below
-		if (k === 'q') document.getElementById('toolboxHideBtn').click();
-		if (e.ctrlKey && k === 'c') { e.preventDefault(); document.getElementById('copyBtn').click(); }
-		if (e.ctrlKey && k === 's') { e.preventDefault(); document.getElementById('saveBtn').click(); }
-		
-		if (['1', '2', '3', '4', '5'].includes(k)) { 
-			e.preventDefault(); 
-			document.querySelectorAll('.symbol-btn, #arrowTool')[parseInt(k) - 1].click(); 
-		}
-		
-		if (k === 'w') document.getElementById('whiteboardToggle').click(); 
-		if (k === 'd') document.getElementById('darkboardToggle').click(); 
-		if (k === 'g') document.getElementById('gridToggle').click();
-		
-		if (e.ctrlKey && k === 'x') { e.preventDefault(); document.getElementById('clearBtn').click(); }
-		if (e.ctrlKey && k === 'z') { e.preventDefault(); document.getElementById('undoBtn').click(); }
-		if (e.ctrlKey && k === 'y') { e.preventDefault(); document.getElementById('redoBtn').click(); }
-		
-		const m = { p: 'pen', h: 'highlighter', e: 'eraser', t: 'text', m: 'move' }; 
-		if (m[k]) setTool(m[k]); 
-};
-
-    document.getElementById('toolboxDragHandle').onmousedown=(e)=>{ isDraggingToolbox=true; let rect=toolbar.getBoundingClientRect(); toolboxOffset.x=e.clientX-rect.left; toolboxOffset.y=e.clientY-rect.top; e.preventDefault(); };
-    window.onresize=()=>{ canvas.width=gCanvas.width=window.innerWidth; canvas.height=gCanvas.height=window.innerHeight; render(); }; 
+    window.onresize = () => { canvas.width=gCanvas.width=window.innerWidth; canvas.height=gCanvas.height=window.innerHeight; render(); }; 
     window.onresize();
     
     document.getElementById('colorPicker').oninput = (e) => syncColor(e.target.value);
-	document.getElementById('miniColorPicker').oninput = (e) => syncColor(e.target.value);
+    document.getElementById('miniColorPicker').oninput = (e) => syncColor(e.target.value);
     document.getElementById('highlighterColorPicker').oninput = (e) => highlighterColor = e.target.value;
     document.getElementById('textColorPicker').oninput = (e) => textColor = e.target.value;
     document.getElementById('whiteboardToggle').onclick = () => { 
         canvas.classList.remove('darkboard-active'); canvas.classList.toggle('whiteboard-active'); 
-        //persistent color // if (canvas.classList.contains('whiteboard-active')) { brushColor = "#4a4a4a"; textColor = "#4a4a4a"; }
         document.getElementById('colorPicker').value = brushColor; document.getElementById('textColorPicker').value = textColor; render();
     };
     document.getElementById('darkboardToggle').onclick = () => { 
         canvas.classList.remove('whiteboard-active'); 
-		canvas.classList.toggle('darkboard-active');
-		/*
-		// Set to Light Gray (150, 150, 150) when Darkboard is turned on
-		if (canvas.classList.contains('darkboard-active')) {
-			syncColor = ("#969696");
-			textColor = "#969696";
-		} else {
-			// Optional: Reset to Charcoal (74, 74, 74) when Darkboard is turned off
-			syncColor = "#4a4a4a";
-			textColor = "#4a4a4a";
-		}
-		*/
+        canvas.classList.toggle('darkboard-active');
     };
     document.getElementById('gridToggle').onclick = () => { 
         const modes=['none','dots','lines','squares']; 
         gridMode=modes[(modes.indexOf(gridMode)+1)%modes.length]; 
         document.getElementById('gridToggle').innerHTML=`🏁 Grid: ${gridMode.charAt(0).toUpperCase() + gridMode.slice(1)}<span>(G)</span>`; render(); 
     };
-    document.getElementById('penMode').onclick = () => setTool('pen'); document.getElementById('highlighterMode').onclick = () => setTool('highlighter');
-    document.getElementById('eraserMode').onclick = () => setTool('eraser'); document.getElementById('textMode').onclick = () => setTool('text');
-    document.getElementById('moveMode').onclick = () => setTool('move'); document.getElementById('arrowTool').onclick = () => setTool('arrow');
+    document.getElementById('penMode').onclick = () => setTool('pen'); 
+    document.getElementById('highlighterMode').onclick = () => setTool('highlighter');
+    document.getElementById('eraserMode').onclick = () => setTool('eraser'); 
+    document.getElementById('textMode').onclick = () => setTool('text');
+    document.getElementById('moveMode').onclick = () => setTool('move'); 
+    document.getElementById('arrowTool').onclick = () => setTool('arrow');
     document.querySelectorAll('.symbol-btn[data-sym]').forEach(btn => btn.onclick = () => { pendingSymbol = btn.dataset.sym; setTool('symbol'); });
     document.getElementById('undoBtn').onclick = () => { if(window._privacyStrokes.length>0){redoStack.push(window._privacyStrokes.pop()); render();} };
     document.getElementById('redoBtn').onclick = () => { if(redoStack.length>0){window._privacyStrokes.push(redoStack.pop()); render();} };
@@ -580,7 +503,5 @@ document.getElementById('saveExitBtn').onclick = () => {
         toolbar.classList.toggle('is-minimized'); 
         document.getElementById('toolboxHideBtn').innerHTML = (toolbar.classList.contains('is-minimized') ? "Show" : "Hide") + "<span>(Q)</span>";
     };
-
-    // This line MUST be outside the brackets so it runs immediately
     document.getElementById('clearBtn').onclick = window.handleClear;
 })();
