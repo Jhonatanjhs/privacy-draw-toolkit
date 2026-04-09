@@ -55,12 +55,10 @@ A lightweight browser extension that lets you draw, annotate, and add text on to
 
 ## 🚀 For the future (maybe)
 
-*UI revamp to make it less bloated  
-*lines, circles  
-
-maybe:  
+*UI, Qol improvements 
+*lines, circles   
 *make the toolbox remember its last position so it opens in the same spot next time  
-*small opacity slider for the Whiteboard/Darkboard backgrounds  
+*small opacity slider for the Whiteboard/Darkboard backgrounds
 
 ---
 
@@ -71,6 +69,21 @@ Clicking the extension icon injects a full-screen canvas overlay and a floating 
 ---
 
 ## 📋 Changelog
+
+### v2.1 — 2026-04-09
+
+✏️ Pen Tool
+
+The pen now shows a custom pen-shaped cursor instead of the default system arrow
+
+The color dot indicator is still visible alongside the pen icon, showing current brush size and color
+
+🔤 Text Tool
+
+A visible dashed box now appears when placing text, so you can see exactly where it will land before clicking
+
+Pressing Esc while on the Text tool now switches back to the Pen tool instead of exiting drawing mode entirely
+
 
 ### v2.0 — 2026-03-30
 

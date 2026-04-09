@@ -43,13 +43,8 @@
     display: none !important;
 }
 
-#privacy-draw-toolbar.is-minimized {
-    opacity: 0.4;
-}
-
-#privacy-draw-toolbar.is-minimized:hover {
-    opacity: 1;
-}
+#privacy-draw-toolbar.is-minimized { opacity: 0.4; }
+#privacy-draw-toolbar.is-minimized:hover { opacity: 1; }
 
 #toolbox-top-bar {
     display: flex; gap: 2px; align-items: stretch; 
@@ -76,36 +71,18 @@
 
 .draw-btn {
     background: #333; color: white; border: 1px solid #555;
-    padding: 6px 1px;
-    border-radius: 3px; cursor: pointer;
-    font-size: 10px; font-weight: bold;
-    text-align: center;
-    width: 100%;
-    box-sizing: border-box;
-    display: block;
-    line-height: 1.2;
+    padding: 6px 1px; border-radius: 3px; cursor: pointer;
+    font-size: 10px; font-weight: bold; text-align: center;
+    width: 100%; box-sizing: border-box; display: block; line-height: 1.2;
 }
-
-.draw-btn span {
-    color: #aaa; 
-    font-weight: normal;
-    margin-left: 1px;
-}
-
+.draw-btn span { color: #aaa; font-weight: normal; margin-left: 1px; }
 .draw-btn.active { background: #007bff !important; border-color: #00a2ff !important; }
 
 .symbol-btn {
-    background: #333; 
-    border: 1px solid #555;
-    cursor: pointer; 
-    height: 22px; 
-    width: 22px; 
-    border-radius: 3px;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    font-size: 14px; 
-    padding: 0;
+    background: #333; border: 1px solid #555;
+    cursor: pointer; height: 22px; width: 22px; border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; padding: 0;
 }
 .symbol-btn:hover { background: #444; }
 .symbol-btn.active { background: #007bff; border-color: #00a2ff; }
@@ -115,47 +92,29 @@
     display: flex; flex-direction: column; gap: 2px;
 }
 
-.slider-row {
-    display: flex; align-items: center; gap: 4px; 
-    padding: 0 2px; margin-top: 2px;
-}
-
-.slider-val {
-    font-size: 9px; color: #00a2ff; min-width: 28px; font-weight: bold;
-}
+.slider-row { display: flex; align-items: center; gap: 4px; padding: 0 2px; margin-top: 2px; }
+.slider-val { font-size: 9px; color: #00a2ff; min-width: 28px; font-weight: bold; }
 
 input[type="range"].slim-slider {
-    -webkit-appearance: none;
-    width: 90px;
-    background: #555;
-    height: 4px;
-    border-radius: 2px;
-    outline: none;
+    -webkit-appearance: none; width: 90px; background: #555;
+    height: 4px; border-radius: 2px; outline: none;
 }
-
 input[type="range"].slim-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 10px; height: 10px;
-    background: #007bff;
-    cursor: pointer;
-    border-radius: 50%;
+    -webkit-appearance: none; width: 10px; height: 10px;
+    background: #007bff; cursor: pointer; border-radius: 50%;
 }
 
 .color-picker-input {
     -webkit-appearance: none; border: 1px solid #555;
-    background: none; cursor: pointer;
-    height: 22px; width: 22px; border-radius: 3px;
+    background: none; cursor: pointer; height: 22px; width: 22px; border-radius: 3px;
 }
 
 #brush-cursor {
     position: fixed !important;
-    border: 1px solid rgba(0,0,0,0.3) !important;
-    border-radius: 50% !important;
     pointer-events: none !important;
     display: none;
     z-index: 2147483647 !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    transform: translate(-50%, -50%) !important;
+    box-sizing: border-box;
 }
 
 .editable-text {
@@ -163,15 +122,16 @@ input[type="range"].slim-slider::-webkit-slider-thumb {
     z-index: 2147483646; outline: none; white-space: nowrap;
     font-family: Arial, sans-serif;
 }
+/* ✅ outline-offset reduced to 1px — much closer to the actual text content */
+.editable-text:focus {
+    outline: 1.5px dashed rgba(100, 160, 255, 0.8) !important;
+    outline-offset: 1px;
+}
 
 #laser-cursor {
     position: fixed !important;
-    width: 12px;
-    height: 12px;
-    background: #ff3333;
-    border-radius: 50%;
-    pointer-events: none !important;
-    display: none;
+    width: 12px; height: 12px; background: #ff3333; border-radius: 50%;
+    pointer-events: none !important; display: none;
     z-index: 2147483647 !important;
     transform: translate(-50%, -50%);
     box-shadow: 0 0 6px 2px rgba(255, 50, 50, 0.7);
