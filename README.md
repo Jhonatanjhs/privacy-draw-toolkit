@@ -70,6 +70,14 @@ Clicking the extension icon injects a full-screen canvas overlay and a floating 
 
 ## 📋 Changelog
 
+### v2.2 — 2026-04-11
+
+Pen cursor — replaced generic cursor with a custom SVG pen icon; line now draws from the exact tip of the cursor
+
+Drawing accuracy — fixed coordinate offset so strokes align precisely with the cursor position at any zoom level or display scale
+
+Pen size preview — a dot showing the current brush size now appears only while scrolling to resize, then disappears when drawing starts
+
 ### v2.1 — 2026-04-09
 
 ✏️ Pen Tool

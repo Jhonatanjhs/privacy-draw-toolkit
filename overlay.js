@@ -85,19 +85,18 @@
         chrome.storage.sync.set({ brushColor, highlighterColor, textColor, penSize, highlighterSize, eraserSize, textSize });
     };
 
-    // ✅ Single polygon — no transforms, tip at (2,2) top-left, hotspot matches
     const buildPenCursor = () => {
-    const svg = [
-        `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">`,
-        `<polygon points="1,1 4,0 20,15 15,20 0,4"`,
-        ` fill="${brushColor}" stroke="white" stroke-width="1" stroke-linejoin="round"/>`,
-        `<polygon points="1,1 4,0 3,3"`,
-        ` fill="white" opacity="0.25"/>`,
-        `</svg>`
-    ].join('');
-    const encoded = btoa(svg);
-    return `url("data:image/svg+xml;base64,${encoded}") 1 1, crosshair`;
-};
+        const svg = [
+            `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">`,
+            `<polygon points="0,20 3,19 19,4 16,1 1,17"`,
+            ` fill="${brushColor}" stroke="white" stroke-width="1" stroke-linejoin="round"/>`,
+            `<polygon points="0,20 3,19 1,17"`,
+            ` fill="white" opacity="0.25"/>`,
+            `</svg>`
+        ].join('');
+        const encoded = btoa(svg);
+        return `url("data:image/svg+xml;base64,${encoded}") 1 19, crosshair`;
+    };
 
     const syncColor = (val) => {
         brushColor = val;
@@ -105,6 +104,7 @@
         const miniPicker = document.getElementById('miniColorPicker');
         if (mainPicker) mainPicker.value = val;
         if (miniPicker) miniPicker.value = val;
+        // Rebuild pen cursor with new color if pen is active
         if (currentTool === 'pen') canvas.style.cursor = buildPenCursor();
         savePrefs();
     };
@@ -226,6 +226,20 @@
         let r = parseInt(h.slice(1,3),16), g = parseInt(h.slice(3,5),16), b = parseInt(h.slice(5,7),16);
         return `rgba(${r},${g},${b},${a})`;
     }
+
+    // Maps mouse event coordinates to exact canvas pixel position,
+    // accounting for canvas scale vs CSS display size and browser zoom.
+    // DO NOT remove or bypass this — it ensures drawing starts from the
+    // exact cursor tip pixel regardless of zoom or display scaling.
+    const getCanvasPos = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+            x: (e.clientX - rect.left) * scaleX,
+            y: (e.clientY - rect.top) * scaleY
+        };
+    };
 
     const showToast = (text) => {
         sizeToast.innerText = text; sizeToast.style.opacity = "1";
@@ -371,6 +385,8 @@
         if (currentTool === 'none' || currentTool === 'laser' || currentTool === 'move') {
             brushCursor.style.display = 'none'; return;
         }
+
+        // Reset all styles
         brushCursor.style.display = 'block';
         brushCursor.style.border = "none"; brushCursor.style.outline = "none";
         brushCursor.style.background = "none"; brushCursor.style.padding = "0";
@@ -380,7 +396,23 @@
         brushCursor.style.color = ''; brushCursor.style.pointerEvents = 'none';
         brushCursor.innerHTML = ""; brushCursor.innerText = "";
 
-        if (currentTool === 'text') {
+        if (currentTool === 'pen') {
+            // Only show size dot while scrolling to resize — hide otherwise.
+            // The SVG pen cursor (set in setTool) handles the visual at all other times.
+            if (window._isScrolling) {
+                const dotSize = Math.max(penSize, 3);
+                brushCursor.style.width = dotSize + 'px';
+                brushCursor.style.height = dotSize + 'px';
+                brushCursor.style.borderRadius = '50%';
+                brushCursor.style.background = brushColor;
+                brushCursor.style.border = '1px solid rgba(255,255,255,0.6)';
+                brushCursor.style.outline = '1px solid rgba(0,0,0,0.3)';
+                brushCursor.style.transform = 'translate(-50%, -50%)';
+            } else {
+                brushCursor.style.display = 'none';
+            }
+            return;
+        } else if (currentTool === 'text') {
             brushCursor.innerText = "Aa";
             brushCursor.style.fontSize = textSize + 'px';
             brushCursor.style.color = textColor;
@@ -392,16 +424,6 @@
             brushCursor.style.fontSize = symbolSize + 'px';
             brushCursor.style.color = colors[pendingSymbol] || "#00ff00";
             brushCursor.style.opacity = "0.85";
-            brushCursor.style.transform = 'translate(-50%, -50%)';
-        } else if (currentTool === 'pen') {
-            canvas.style.cursor = buildPenCursor();
-            const dotSize = Math.max(penSize, 3);
-            brushCursor.style.width = dotSize + 'px';
-            brushCursor.style.height = dotSize + 'px';
-            brushCursor.style.borderRadius = '50%';
-            brushCursor.style.background = brushColor;
-            brushCursor.style.border = '1px solid rgba(255,255,255,0.6)';
-            brushCursor.style.outline = '1px solid rgba(0,0,0,0.3)';
             brushCursor.style.transform = 'translate(-50%, -50%)';
         } else if (currentTool === 'eraser') {
             const visual = eraserSize * 2;
@@ -462,12 +484,18 @@
             mouseOffset.y = e.clientY - activeText.offsetTop;
             return;
         }
+        // Hide pen size dot immediately when drawing starts (pen uses SVG cursor instead)
+        if (currentTool === 'pen') {
+            window._isScrolling = false;
+            brushCursor.style.display = 'none';
+        }
+
         isDown = true; redoStack = [];
         let c = (currentTool === 'arrow') ? "#00ff00" : (currentTool === 'highlighter' ? hexToRgba(highlighterColor, 0.5) : brushColor);
         window._privacyStrokes.push({
             tool: currentTool, color: c,
             width: currentTool === 'eraser' ? eraserSize : (currentTool === 'highlighter' ? highlighterSize : penSize),
-            points: [{ x: e.clientX, y: e.clientY }]
+            points: [getCanvasPos(e)]
         });
     };
 
@@ -491,8 +519,9 @@
             activeText.style.top = (e.clientY - mouseOffset.y) + 'px'; return;
         }
         if (isDown) {
-            if (currentTool === 'arrow') window._privacyStrokes[window._privacyStrokes.length-1].points[1] = {x:e.clientX, y:e.clientY};
-            else window._privacyStrokes[window._privacyStrokes.length-1].points.push({x:e.clientX, y:e.clientY});
+            const pos = getCanvasPos(e);
+            if (currentTool === 'arrow') window._privacyStrokes[window._privacyStrokes.length-1].points[1] = pos;
+            else window._privacyStrokes[window._privacyStrokes.length-1].points.push(pos);
             render();
         }
     };
@@ -501,17 +530,17 @@
 
     window.onkeydown = (e) => {
         const k = e.key.toLowerCase();
-		if (k === 'escape') {
-			e.preventDefault();
-			if (currentTool === 'text') {
-				setTool('pen');
-			} else if (currentTool === 'none') {
-				setTool(lastTool);
-			} else {
-				enterBrowsingMode();
-			}
-			return;
-		}
+        if (k === 'escape') {
+            e.preventDefault();
+            if (currentTool === 'text') {
+                setTool('pen');
+            } else if (currentTool === 'none') {
+                setTool(lastTool);
+            } else {
+                enterBrowsingMode();
+            }
+            return;
+        }
         if (currentTool === 'none' && k !== 'q') return;
         if (e.target.tagName === 'INPUT' || e.target.contentEditable === 'true') return;
         if (k === 'q') document.getElementById('toolboxHideBtn').click();
