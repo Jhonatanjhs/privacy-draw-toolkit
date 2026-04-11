@@ -51,8 +51,8 @@
         window.removeEventListener('beforeunload', leavePageWarning);
         window.onmousedown = null; window.onmousemove = null;
         window.onmouseup = null; window.onkeydown = null; window.onresize = null;
-        document.body.style.cursor = ''; canvas.style.cursor = '';
-        delete window._privacyStrokes; delete window._privacyCleanup;
+        document.body.style.cursor = '';
+		if (typeof canvas !== 'undefined' && canvas) canvas.style.cursor = '';
     };
 
     const existingToolbar = document.getElementById('privacy-draw-toolbar');
